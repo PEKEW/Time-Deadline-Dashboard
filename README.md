@@ -7,4 +7,4 @@ Time Deadline Dashboard For Program Time Line
 
 `cd path`
 `npm install`
-`npm start dev`
+`npm run dev`
