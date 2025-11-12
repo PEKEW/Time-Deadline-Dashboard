@@ -4,36 +4,10 @@ import * as XLSX from 'xlsx-js-style'
 
 function App() {
   const [programs, setPrograms] = useState([])
-  const [today] = useState(new Date())
-  const [currentAoETime, setCurrentAoETime] = useState('')
+  const [today, setToday] = useState(new Date())
   const [errorMessage, setErrorMessage] = useState('')
-  const fileInputRef = useRef(null)
+  const [isLocked, setIsLocked] = useState(false)
 
-  const getCurrentAoETime = () => {
-    const now = new Date()
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000)
-    const aoeTime = new Date(utc - (12 * 60 * 60 * 1000))
-
-    const year = aoeTime.getFullYear()
-    const month = String(aoeTime.getMonth() + 1).padStart(2, '0')
-    const day = String(aoeTime.getDate()).padStart(2, '0')
-    const hours = String(aoeTime.getHours()).padStart(2, '0')
-    const minutes = String(aoeTime.getMinutes()).padStart(2, '0')
-    const seconds = String(aoeTime.getSeconds()).padStart(2, '0')
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
-  }
-
-  useEffect(() => {
-    const updateTime = () => {
-      setCurrentAoETime(getCurrentAoETime())
-    }
-
-    updateTime()
-    const timer = setInterval(updateTime, 1000)
-
-    return () => clearInterval(timer)
-  }, [])
 
   const processConfig = (config) => {
     if (!config || typeof config !== 'object') {
@@ -90,39 +64,12 @@ function App() {
         }
       })
 
-      // Handle conference (DDL) node
-      let conferenceNode = null
-      if (p.conference) {
-        if (!p.conference.name || typeof p.conference.name !== 'string') {
-          throw new Error(`Program "${p.name}" conference is missing a valid name field`)
-        }
-        if (!p.conference.date) {
-          throw new Error(`Program "${p.name}" conference is missing the date field`)
-        }
-
-        const conferenceDate = new Date(p.conference.date)
-        if (isNaN(conferenceDate.getTime())) {
-          throw new Error(`Program "${p.name}" conference has invalid date format: "${p.conference.date}"`)
-        }
-
-        conferenceNode = {
-          id: `${p.id}-conference`,
-          name: p.conference.name,
-          date: conferenceDate
-        }
-      } else {
-        // If no conference field, automatically compute DDL
-        if (timePoints.length > 0) {
-          const lastDate = new Date(timePoints[timePoints.length - 1].date)
-          const autoDDL = new Date(lastDate)
-          autoDDL.setDate(autoDDL.getDate() + ddlGapDays)
-
-          conferenceNode = {
-            id: `${p.id}-conference`,
-            name: 'Conference',
-            date: autoDDL
-          }
-        }
+      // Handle conference (DDL) node - Fixed to 2026-10-05
+      const fixedConferenceDate = new Date('2026-10-05')
+      const conferenceNode = {
+        id: `${p.id}-conference`,
+        name: 'Conference',
+        date: fixedConferenceDate
       }
 
       return {
@@ -149,144 +96,20 @@ function App() {
       const config = await response.json()
       const loadedPrograms = processConfig(config)
       setPrograms(loadedPrograms)
+
+      // Set today to 15 days before the first event of the first program
+      if (loadedPrograms.length > 0 && loadedPrograms[0].timePoints.length > 0) {
+        const firstEventDate = new Date(loadedPrograms[0].timePoints[0].date)
+        const newToday = new Date(firstEventDate)
+        newToday.setDate(newToday.getDate() - 15)
+        setToday(newToday)
+      }
     } catch (error) {
       console.error('Failed to load config file:', error)
       setErrorMessage(`Load failed: ${error.message}`)
     }
   }
 
-  // Import data from Excel
-  const handleExcelUpload = (event) => {
-    const file = event.target.files[0]
-    if (!file) return
-
-    setErrorMessage('')
-    const reader = new FileReader()
-
-    reader.onload = (e) => {
-      try {
-        const data = new Uint8Array(e.target.result)
-        const workbook = XLSX.read(data, { type: 'array' })
-
-  // Read the first worksheet
-  const sheetName = workbook.SheetNames[0]
-  const worksheet = workbook.Sheets[sheetName]
-
-  // Convert worksheet to JSON
-  const jsonData = XLSX.utils.sheet_to_json(worksheet)
-
-        if (!jsonData || jsonData.length === 0) {
-          throw new Error('Excel file is empty or has invalid format')
-        }
-
-        // Validate required columns
-        const firstRow = jsonData[0]
-        if (!firstRow.DATE || !firstRow.EVENT) {
-          throw new Error('Excel file must contain DATE and EVENT columns')
-        }
-
-  // Group rows by program (process in order)
-  const programsMap = new Map()
-        let currentProgramName = null
-
-        jsonData.forEach((row, index) => {
-          if (!row.DATE || !row.EVENT) {
-            console.warn(`Skipping row ${index + 2}: missing required fields`)
-            return
-          }
-
-          // Parse date
-          const date = new Date(row.DATE)
-          if (isNaN(date.getTime())) {
-            throw new Error(`Invalid date format on row ${index + 2}: "${row.DATE}"`)
-          }
-
-          // Check if this is a Conference row
-          if (row.EVENT.trim() === 'Conference') {
-            // This is a conference row and belongs to the current program
-            if (!currentProgramName) {
-              throw new Error(`Row ${index + 2} is Conference but has no corresponding Program`)
-            }
-
-            programsMap.get(currentProgramName).conference = {
-              id: `${currentProgramName.toLowerCase().replace(/\s+/g, '-')}-conference`,
-              name: 'Conference',
-              date: date
-            }
-          } else {
-            // Parse EVENT field: format is "ProgramName - EventName"
-            const eventParts = row.EVENT.split(' - ')
-            if (eventParts.length < 2) {
-              throw new Error(`Invalid EVENT format on row ${index + 2}; expected "ProgramName - EventName" or "Conference"`)
-            }
-
-            const programName = eventParts[0].trim()
-            const eventName = eventParts.slice(1).join(' - ').trim()
-
-            // Update current program
-            currentProgramName = programName
-
-            // Add to the corresponding program
-            if (!programsMap.has(programName)) {
-              programsMap.set(programName, { events: [], conference: null })
-            }
-
-            // This is a regular event
-            programsMap.get(programName).events.push({
-              id: `${programName.toLowerCase().replace(/\s+/g, '-')}-${index}`,
-              name: eventName,
-              date: date
-            })
-          }
-        })
-
-        // Convert to the format required by the app
-        const loadedPrograms = Array.from(programsMap.entries()).map(([programName, data], index) => {
-          // Sort timePoints by date
-          data.events.sort((a, b) => a.date - b.date)
-
-          let conferenceNode = data.conference
-
-          // If there is no conference node, auto-compute the DDL
-          if (!conferenceNode && data.events.length > 0) {
-            const lastDate = new Date(data.events[data.events.length - 1].date)
-            const autoDDL = new Date(lastDate)
-            autoDDL.setDate(autoDDL.getDate() + 30)
-
-            conferenceNode = {
-              id: `${programName.toLowerCase().replace(/\s+/g, '-')}-conference`,
-              name: 'Conference',
-              date: autoDDL
-            }
-          }
-
-          return {
-            id: programName.toLowerCase().replace(/\s+/g, '-'),
-            name: programName,
-            timePoints: data.events,
-            conference: conferenceNode,
-            ddl: conferenceNode ? conferenceNode.date : null
-          }
-        })
-
-        setPrograms(loadedPrograms)
-        } catch (error) {
-        console.error('Excel parsing failed:', error)
-        setErrorMessage(`Excel parsing failed: ${error.message}`)
-      }
-    }
-
-    reader.onerror = () => {
-      setErrorMessage('File read failed, please try again')
-    }
-
-    reader.readAsArrayBuffer(file)
-  }
-
-  // Trigger file input
-  const triggerFileInput = () => {
-    fileInputRef.current?.click()
-  }
 
   // Initial load
   useEffect(() => {
@@ -295,6 +118,8 @@ function App() {
 
   // Update the date of a time point
   const updateTimePointDate = (programId, timePointId, newDate) => {
+    if (isLocked) return // Don't allow changes when locked
+
     setPrograms(programs.map(p => {
       if (p.id === programId) {
         return {
@@ -430,49 +255,39 @@ function App() {
 
   return (
     <div className="app">
-      <div className="title-container">
-        <h1 className="main-title">Time Deadlines(AoE)</h1>
-        <div className="info-icon-wrapper">
-          <div className="info-icon">i</div>
-          <div className="info-tooltip">
-            <div className="tooltip-item">
-              <strong>Dragg:</strong> Drag red nodes to adjust the date
-            </div>
-            <div className="tooltip-item">
-              <strong>Double-click:</strong> Double-click red nodes to enter a specific date
+      <div className="header-container">
+        <div className="title-section">
+          <h1 className="main-title">Time Deadlines(AoE)</h1>
+          <div className="info-icon-wrapper">
+            <div className="info-icon">i</div>
+            <div className="info-tooltip">
+              <div className="tooltip-item">
+                <strong>Dragg:</strong> Drag red nodes to adjust the date
+              </div>
+              <div className="tooltip-item">
+                <strong>Double-click:</strong> Double-click red nodes to enter a specific date
+              </div>
             </div>
           </div>
         </div>
+        <div className="header-actions">
+          <button className="refresh-btn" onClick={loadConfig}>
+            Restore
+          </button>
+          <button className="export-btn" onClick={exportToExcel}>
+            Export
+          </button>
+          {isLocked ? (
+            <button className="unlock-btn" onClick={() => setIsLocked(false)}>
+              Unlock
+            </button>
+          ) : (
+            <button className="lock-btn" onClick={() => setIsLocked(true)}>
+              Lock
+            </button>
+          )}
+        </div>
       </div>
-
-      <div
-        className="header-actions"
-        style={{
-          display: 'flex',
-          gap: '8px',
-          flexWrap: 'nowrap',
-          alignItems: 'center'
-        }}
-      >
-        <button className="refresh-btn" onClick={loadConfig}>
-          Restore to initial state
-        </button>
-        <button className="refresh-btn" onClick={triggerFileInput}>
-          Import Excel
-        </button>
-        <button className="export-btn" onClick={exportToExcel}>
-          Export Excel
-        </button>
-      </div>
-
-      {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".xlsx,.xls"
-        onChange={handleExcelUpload}
-        style={{ display: 'none' }}
-      />
 
       {/* Error message display */}
       {errorMessage && (
@@ -481,18 +296,15 @@ function App() {
         </div>
       )}
 
-      <div className="today-info">
-        <strong>Current AoE Time:</strong>{' '}
-        <span className="date">{currentAoETime}</span>
-      </div>
-
       <div className="timeline-container">
-        {programsWithColors.map((program) => (
+        {programsWithColors.map((program, index) => (
           <TimeLine
             key={program.id}
             program={program}
             today={today}
             color={program.color} // Pass the color to TimeLine
+            isLocked={isLocked} // Pass the lock state to TimeLine
+            isFirst={index === 0} // Pass whether this is the first program
             onTimePointChange={(timePointId, newDate) =>
               updateTimePointDate(program.id, timePointId, newDate)
             }

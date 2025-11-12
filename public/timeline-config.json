@@ -2,53 +2,62 @@
   "programs": [
     {
       "id": "papers",
-      "name": "Papers",
+      "name": "PAPER (scientific program)",
       "timePoints": [
-        { "id": "p1", "name": "Abstract Deadline", "date": "2026-03-01" },
-        { "id": "p2", "name": "Full Paper", "date": "2026-03-15" },
-        { "id": "p3", "name": "Notification", "date": "2026-04-15" },
-        { "id": "p4", "name": "Camera Ready", "date": "2026-05-01" }
+        { "id": "p1", "name": "Abstracts", "date": "2026-03-09" },
+        { "id": "p2", "name": "Full papers", "date": "2026-03-16" },
+        { "id": "p3", "name": "Initial notification", "date": "2026-05-08" },
+        { "id": "p4", "name": "Revise & Resubmit (or rebuttal)", "date": "2026-05-22" },
+        { "id": "p5", "name": "Final notification", "date": "2026-06-29" },
+        { "id": "p6", "name": "Camera-ready", "date": "2026-07-07" }
       ]
     },
     {
       "id": "workshops",
-      "name": "Workshops",
+      "name": "WORKSHOPS (proposals)",
       "timePoints": [
-        { "id": "w1", "name": "Submission", "date": "2026-04-01" },
-        { "id": "w2", "name": "Notification", "date": "2026-04-20" },
-        { "id": "w3", "name": "Final Version", "date": "2026-05-10" }
+        { "id": "w1", "name": "Proposals", "date": "2026-04-06" },
+        { "id": "w2", "name": "Acceptance", "date": "2026-05-04" },
+        { "id": "w3", "name": "Calls for participation issued by", "date": "2026-05-17" },
+        { "id": "w4", "name": "Camera-ready", "date": "2026-07-20" }
       ]
     },
     {
       "id": "tutorials",
-      "name": "Tutorials",
+      "name": "TUTORIALS (proposals)",
       "timePoints": [
-        { "id": "t1", "name": "Proposal", "date": "2026-03-10" },
-        { "id": "t2", "name": "Decision", "date": "2026-04-05" }
+        { "id": "t1", "name": "Proposals", "date": "2026-04-20" },
+        { "id": "t2", "name": "Acceptance", "date": "2026-05-04" },
+        { "id": "t3", "name": "Calls for participation issued by", "date": "2026-05-17" },
+        { "id": "t4", "name": "Camera-ready", "date": "2026-07-20" }
       ]
     },
     {
       "id": "doctoral",
-      "name": "Doctoral Consortium",
+      "name": "DOCTORAL CONSORTIUM",
       "timePoints": [
-        { "id": "d1", "name": "Submission", "date": "2026-04-15" },
-        { "id": "d2", "name": "Notification", "date": "2026-05-15" }
-      ]
-    },
-    {
-      "id": "demos",
-      "name": "Demos",
-      "timePoints": [
-        { "id": "dm1", "name": "Submission", "date": "2026-05-01" },
-        { "id": "dm2", "name": "Notification", "date": "2026-05-20" }
+        { "id": "d1", "name": "Applications", "date": "2026-06-03" },
+        { "id": "d2", "name": "Acceptance", "date": "2026-06-17" },
+        { "id": "d3", "name": "Attendance confirmation", "date": "2026-06-20" },
+        { "id": "d4", "name": "Camera-ready", "date": "2026-07-06" }
       ]
     },
     {
       "id": "posters",
-      "name": "Posters",
+      "name": "POSTERS",
       "timePoints": [
-        { "id": "po1", "name": "Submission", "date": "2026-05-10" },
-        { "id": "po2", "name": "Notification", "date": "2026-06-01" }
+        { "id": "po1", "name": "Submission", "date": "2026-07-09" },
+        { "id": "po2", "name": "Notification", "date": "2026-07-20" },
+        { "id": "po3", "name": "Camera-ready", "date": "2026-07-27" }
+      ]
+    },
+    {
+      "id": "demos",
+      "name": "DEMOS",
+      "timePoints": [
+        { "id": "dm1", "name": "Submission", "date": "2026-07-09" },
+        { "id": "dm2", "name": "Notification", "date": "2026-07-17" },
+        { "id": "dm3", "name": "Camera-ready", "date": "2026-07-24" }
       ]
     }
   ]
