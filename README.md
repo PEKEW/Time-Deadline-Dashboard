@@ -1,7 +1,8 @@
 # Time-Deadline-Dashboard
 Time Deadline Dashboard For Program Time Line
 
-<img width="1883" height="721" alt="image" src="https://github.com/user-attachments/assets/9f064e42-701d-4d35-ab4f-7e7f9e7cf4a7" />
+<img width="1876" height="699" alt="image" src="https://github.com/user-attachments/assets/fc257819-c744-496b-bb80-f63d9f875d18" />
+
 
 # install
 
