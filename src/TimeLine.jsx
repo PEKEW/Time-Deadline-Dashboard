@@ -94,20 +94,16 @@ function TimePoint({ timePoint, position, today, ddl, canDrag, onDateChange, pix
     if (prevDate) {
       const prevTime = new Date(prevDate)
       prevTime.setHours(0, 0, 0, 0)
-  // Current node cannot be earlier than previous node (1-day buffer)
-      const minTime = new Date(prevTime)
-      minTime.setDate(minTime.getDate() + 1)
-      if (clampedDate < minTime) clampedDate = minTime
+  // Current node cannot be earlier than previous node (0-day buffer, same day allowed)
+      if (clampedDate < prevTime) clampedDate = prevTime
     }
 
   // Order constraint: cannot cross the next node
     if (nextDate) {
       const nextTime = new Date(nextDate)
       nextTime.setHours(0, 0, 0, 0)
-  // Current node cannot be later than next node (1-day buffer)
-      const maxTime = new Date(nextTime)
-      maxTime.setDate(maxTime.getDate() - 1)
-      if (clampedDate > maxTime) clampedDate = maxTime
+  // Current node cannot be later than next node (0-day buffer, same day allowed)
+      if (clampedDate > nextTime) clampedDate = nextTime
     }
 
     return clampedDate
@@ -204,11 +200,16 @@ function TimePoint({ timePoint, position, today, ddl, canDrag, onDateChange, pix
       >
         <div
           className={`point-dot ${isConference ? 'conference-node' : ''}`}
-          style={{ background: `#${color}` }}
+          style={{ 
+            background: `#${color}`,
+            '--pulse-color': `#${color}`,
+            '--pulse-color-alpha': `#${color}66`,
+            '--pulse-color-fade': `#${color}00`
+          }}
         ></div>
 
         {/* Vertical positioning line */}
-        <div className={lineClass} style={{ background: `#${color}` }}></div>
+        <div className={lineClass} style={{ color: `#${color}` }}></div>
 
         {/* Display node info */}
         <div className={infoClass}>
@@ -343,8 +344,8 @@ function TimeLine({ program, today, onTimePointChange, isLastProgram = false }) 
           </div>
         )}
 
-        {/* Render Conference DDL node (full card) - only for last program */}
-        {program.conference && isLastProgram && (
+        {/* Render Conference DDL node (full card) */}
+        {program.conference && (
           <TimePoint
             timePoint={program.conference}
             position={ddlPos}

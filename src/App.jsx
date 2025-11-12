@@ -487,13 +487,12 @@ function App() {
       </div>
 
       <div className="timeline-container">
-        {programsWithColors.map((program, index) => (
+        {programsWithColors.map((program) => (
           <TimeLine
             key={program.id}
             program={program}
             today={today}
             color={program.color} // Pass the color to TimeLine
-            isLastProgram={index === programsWithColors.length - 1} // Only show conference for last program
             onTimePointChange={(timePointId, newDate) =>
               updateTimePointDate(program.id, timePointId, newDate)
             }

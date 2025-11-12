@@ -1,71 +1,55 @@
 {
-  "ddlGapDays": 30,
   "programs": [
     {
       "id": "papers",
-      "name": "Papers (Scientific Program)",
+      "name": "Papers",
       "timePoints": [
-        { "id": "p1", "name": "Abstracts Due", "date": "2026-03-09" },
-        { "id": "p2", "name": "Full Papers Due", "date": "2026-03-16" },
-        { "id": "p3", "name": "Initial Notification", "date": "2026-05-08" },
-        { "id": "p4", "name": "Revise & Resubmit Due", "date": "2026-05-22" },
-        { "id": "p5", "name": "Final Notification", "date": "2026-06-29" },
-        { "id": "p6", "name": "Camera-Ready", "date": "2026-07-07" }
-      ],
-      "conference": { "name": "Conference", "date": "2026-10-08" }
+        { "id": "p1", "name": "Abstract Deadline", "date": "2026-03-01" },
+        { "id": "p2", "name": "Full Paper", "date": "2026-03-15" },
+        { "id": "p3", "name": "Notification", "date": "2026-04-15" },
+        { "id": "p4", "name": "Camera Ready", "date": "2026-05-01" }
+      ]
     },
     {
       "id": "workshops",
-      "name": "Workshops (Proposals)",
+      "name": "Workshops",
       "timePoints": [
-        { "id": "w1", "name": "Proposal Deadline", "date": "2026-04-06" },
-        { "id": "w2", "name": "Acceptance Notification", "date": "2026-05-04" },
-        { "id": "w3", "name": "Calls for Participation", "date": "2026-05-17" },
-        { "id": "w4", "name": "Camera-Ready Materials", "date": "2026-07-20" }
-      ],
-      "conference": { "name": "Conference", "date": "2026-10-08" }
+        { "id": "w1", "name": "Submission", "date": "2026-04-01" },
+        { "id": "w2", "name": "Notification", "date": "2026-04-20" },
+        { "id": "w3", "name": "Final Version", "date": "2026-05-10" }
+      ]
     },
     {
       "id": "tutorials",
-      "name": "Tutorials (Proposals)",
+      "name": "Tutorials",
       "timePoints": [
-        { "id": "t1", "name": "Proposal Deadline", "date": "2026-04-20" },
-        { "id": "t2", "name": "Acceptance Notification", "date": "2026-05-04" },
-        { "id": "t3", "name": "Calls for Participation", "date": "2026-05-17" },
-        { "id": "t4", "name": "Camera-Ready Materials", "date": "2026-07-20" }
-      ],
-      "conference": { "name": "Conference", "date": "2026-10-08" }
+        { "id": "t1", "name": "Proposal", "date": "2026-03-10" },
+        { "id": "t2", "name": "Decision", "date": "2026-04-05" }
+      ]
     },
     {
       "id": "doctoral",
       "name": "Doctoral Consortium",
       "timePoints": [
-        { "id": "d1", "name": "Application Deadline", "date": "2026-06-03" },
-        { "id": "d2", "name": "Acceptance Notification", "date": "2026-06-17" },
-        { "id": "d3", "name": "Attendance Confirmation", "date": "2026-06-20" },
-        { "id": "d4", "name": "DC Paper Camera-Ready", "date": "2026-07-06" }
-      ],
-      "conference": { "name": "Conference", "date": "2026-10-08" }
-    },
-    {
-      "id": "posters",
-      "name": "Posters",
-      "timePoints": [
-        { "id": "po1", "name": "Poster Submission", "date": "2026-07-09" },
-        { "id": "po2", "name": "Notification", "date": "2026-07-20" },
-        { "id": "po3", "name": "Camera-Ready", "date": "2026-07-27" }
-      ],
-      "conference": { "name": "Conference", "date": "2026-10-08" }
+        { "id": "d1", "name": "Submission", "date": "2026-04-15" },
+        { "id": "d2", "name": "Notification", "date": "2026-05-15" }
+      ]
     },
     {
       "id": "demos",
       "name": "Demos",
       "timePoints": [
-        { "id": "dm1", "name": "Submission Deadline", "date": "2026-07-09" },
-        { "id": "dm2", "name": "Notification", "date": "2026-07-17" },
-        { "id": "dm3", "name": "Camera-Ready", "date": "2026-07-24" }
-      ],
-      "conference": { "name": "Conference", "date": "2026-10-08" }
+        { "id": "dm1", "name": "Submission", "date": "2026-05-01" },
+        { "id": "dm2", "name": "Notification", "date": "2026-05-20" }
+      ]
+    },
+    {
+      "id": "posters",
+      "name": "Posters",
+      "timePoints": [
+        { "id": "po1", "name": "Submission", "date": "2026-05-10" },
+        { "id": "po2", "name": "Notification", "date": "2026-06-01" }
+      ]
     }
   ]
 }
