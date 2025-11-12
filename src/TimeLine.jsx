@@ -5,66 +5,8 @@ function TimePoint({ timePoint, position, today, ddl, canDrag, onDateChange, pix
   const [isDragging, setIsDragging] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState('')
-  const [countdown, setCountdown] = useState('')
   const dragStartX = useRef(0)
   const dragStartDate = useRef(null)
-
-  // Get current AoE time (UTC-12)
-  const getCurrentAoETime = () => {
-    const now = new Date()
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000)
-    const aoeTime = new Date(utc - (12 * 60 * 60 * 1000))
-    return aoeTime
-  }
-
-  // Calculate countdown to the target date's AoE 00:00:00
-  const calculateCountdown = () => {
-    const currentAoE = getCurrentAoETime()
-
-  // Target date's AoE 00:00:00
-  const targetDate = new Date(timePoint.date)
-  // Convert to midnight in AoE timezone
-    const targetAoE = new Date(Date.UTC(
-      targetDate.getFullYear(),
-      targetDate.getMonth(),
-      targetDate.getDate(),
-      12, 0, 0, 0 // UTC+12 = AoE 00:00:00
-    ))
-
-    const diff = targetAoE - currentAoE
-
-    if (diff <= 0) {
-      const absDiff = Math.abs(diff)
-      const days = Math.floor(absDiff / (1000 * 60 * 60 * 24))
-      const hours = Math.floor((absDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-      const minutes = Math.floor((absDiff % (1000 * 60 * 60)) / (1000 * 60))
-      const seconds = Math.floor((absDiff % (1000 * 60)) / 1000)
-      return `Passed ${days} days ${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
-    } else {
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000)
-
-      if (days > 0) {
-        return `Remaining ${days} days ${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
-      } else {
-        return `Remaining ${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
-      }
-    }
-  }
-
-  // Update countdown every second
-  useEffect(() => {
-    const updateCountdown = () => {
-      setCountdown(calculateCountdown())
-    }
-
-    updateCountdown()
-    const timer = setInterval(updateCountdown, 1000)
-
-    return () => clearInterval(timer)
-  }, [timePoint.date])
 
   // Calculate days from today (used for static day labels)
   const getDaysFromToday = (date) => {
@@ -213,7 +155,6 @@ function TimePoint({ timePoint, position, today, ddl, canDrag, onDateChange, pix
 
         {/* Display node info */}
         <div className={infoClass}>
-          <div className="point-name" style={{ color: `#${color}` }}>{timePoint.name}</div>
           {isEditing ? (
             <input
               type="date"
@@ -225,11 +166,11 @@ function TimePoint({ timePoint, position, today, ddl, canDrag, onDateChange, pix
               className="date-input"
             />
           ) : (
-            <div className="days-info">
-              <div style={{ color: `#${color}` }}>{timePoint.date.toLocaleDateString('en-US')}</div>
-              <div className="days-count" style={{ color: `#${color}` }}>
-                {countdown}
-              </div>
+            <div className="point-info-line" style={{ color: `#${color}` }}>
+              <span className="point-name">{timePoint.name}</span>
+              <span className="point-date">
+                {timePoint.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </span>
             </div>
           )}
         </div>
@@ -248,7 +189,7 @@ function getDaysBetween(date1, date2) {
 }
 
 // Timeline main component
-function TimeLine({ program, today, onTimePointChange, isLastProgram = false }) {
+function TimeLine({ program, today, onTimePointChange, isLocked = false, isFirst = false, isLastProgram = false }) {
   const timelineRef = useRef(null)
   const [containerWidth, setContainerWidth] = useState(1000)
   
@@ -335,7 +276,7 @@ function TimeLine({ program, today, onTimePointChange, isLastProgram = false }) 
   const { positions, width, todayPos, ddlPos, timelineWidth, pixelsPerDay } = calculateLayout()
 
   return (
-    <div className="timeline-row">
+    <div className={`timeline-row ${isFirst ? 'first-row' : ''}`}>
       <div className="program-name">
         <span style={{ color: `#${program.color}` }}>{program.name}</span>
       </div>
@@ -363,8 +304,7 @@ function TimeLine({ program, today, onTimePointChange, isLastProgram = false }) 
           <div className="timeline-marker today-marker" style={{ left: `${todayPos}px` }}>
             <div className="marker-dot today-dot"></div>
             <div className="marker-label">
-              <div className="marker-name">Today</div>
-              <div className="marker-date">{today.toLocaleDateString('en-US')}</div>
+              <div className="marker-date">{today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
             </div>
           </div>
         )}
@@ -441,7 +381,7 @@ function TimeLine({ program, today, onTimePointChange, isLastProgram = false }) 
                 position={positions[index]}
                 today={today}
                 ddl={program.ddl}
-                canDrag={!!program.ddl}
+                canDrag={!!program.ddl && !isLocked}
                 onDateChange={(newDate) => onTimePointChange(timePoint.id, newDate)}
                 pixelsPerDay={pixelsPerDay}
                 prevDate={prevTimePoint ? prevTimePoint.date : null}
@@ -468,7 +408,7 @@ function TimeLine({ program, today, onTimePointChange, isLastProgram = false }) 
                   className="days-between-label"
                   style={{ left: `${pos2}px`, color: `#${program.color}` }}
                 >
-                  <span style={{ color: `#${program.color}` }}>{daysBetween} days apart</span>
+                  <span style={{ color: `#${program.color}` }}>{daysBetween} days</span>
                 </div>
               </div>
             )
