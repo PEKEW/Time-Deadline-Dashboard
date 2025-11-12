@@ -676,23 +676,76 @@ body {
 /* Responsive design */
 @media (max-width: 768px) {
   body {
-    padding: 15px;
+    padding: 8px;
   }
 
   .app {
-    padding: 25px 20px;
+    padding: 15px 10px;
     max-width: 100%;
   }
 
   .main-title {
-    font-size: 28px;
-    margin: 20px 0;
+    font-size: 24px;
+    margin: 15px 0;
   }
 
   .timeline-row {
     grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 30px 0;
+    gap: 15px;
+    padding: 20px 0;
+  }
+
+  .program-name {
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .timeline {
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+
+  .date-info {
+    font-size: 11px;
+    padding: 8px 10px;
+    max-width: 120px;
+  }
+
+  .point-name {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .days-info div {
+    font-size: 10px;
+    margin-bottom: 2px;
+  }
+
+  .days-count {
+    font-size: 9px !important;
+  }
+
+  .point-dot {
+    width: 20px;
+    height: 20px;
+    border: 3px solid white;
+  }
+
+  .timeline-marker {
+    font-size: 11px;
+  }
+
+  .marker-name {
+    font-size: 10px;
+  }
+
+  .marker-date {
+    font-size: 9px;
+  }
+
+  .days-between-label {
+    font-size: 10px;
   }
 
   .header-actions {
@@ -708,9 +761,66 @@ body {
   .export-btn,
   .refresh-btn {
     width: 100%;
+    font-size: 14px;
+    padding: 10px 20px;
   }
 
   .timeline-container {
     padding: 10px 0;
+  }
+
+  .today-info {
+    font-size: 14px;
+    padding: 10px 15px;
+  }
+
+  .today-info .date {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: 10px 5px;
+  }
+
+  .main-title {
+    font-size: 20px;
+  }
+
+  .program-name {
+    font-size: 12px;
+  }
+
+  .date-info {
+    font-size: 10px;
+    padding: 6px 8px;
+    max-width: 100px;
+  }
+
+  .point-name {
+    font-size: 11px;
+  }
+
+  .days-info div {
+    font-size: 9px;
+  }
+
+  .days-count {
+    font-size: 8px !important;
+  }
+
+  .point-dot {
+    width: 18px;
+    height: 18px;
+    border: 2px solid white;
+  }
+
+  .timeline-line {
+    height: 4px;
+  }
+
+  .position-line {
+    width: 1.5px;
   }
 }

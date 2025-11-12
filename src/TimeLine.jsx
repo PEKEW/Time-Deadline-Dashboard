@@ -251,9 +251,34 @@ function getDaysBetween(date1, date2) {
 function TimeLine({ program, today, onTimePointChange, isLastProgram = false }) {
   const timelineRef = useRef(null)
   const [containerWidth, setContainerWidth] = useState(1000)
-  const START_OFFSET = 100 // start offset (space for Today marker)
-  const END_OFFSET = 100 // end offset (space for DDL marker)
-  const PADDING = 30 // extra padding
+  
+  // Responsive offsets based on screen size
+  const getResponsiveOffsets = () => {
+    const isMobile = window.innerWidth <= 768
+    const isSmallMobile = window.innerWidth <= 480
+    
+    if (isSmallMobile) {
+      return {
+        START_OFFSET: 60,
+        END_OFFSET: 60, 
+        PADDING: 15
+      }
+    } else if (isMobile) {
+      return {
+        START_OFFSET: 80,
+        END_OFFSET: 80,
+        PADDING: 20
+      }
+    } else {
+      return {
+        START_OFFSET: 100,
+        END_OFFSET: 100,
+        PADDING: 30
+      }
+    }
+  }
+  
+  const { START_OFFSET, END_OFFSET, PADDING } = getResponsiveOffsets()
 
   // Watch container width changes
   useEffect(() => {
